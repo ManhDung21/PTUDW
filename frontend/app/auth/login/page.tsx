@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -19,14 +19,14 @@ export default function LoginPage() {
       router.push('/store');
     } catch (err) {
       console.error(err);
-      setLocalError('Đăng nhập không thành công.');
+      setLocalError('ÄÄƒng nháº­p khÃ´ng thÃ nh cÃ´ng.');
     }
   };
 
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Đăng nhập</h1>
+        <h1>ÄÄƒng nháº­p</h1>
         {localError ? <p className="section-error">{localError}</p> : null}
         {error ? <p className="section-error">{error}</p> : null}
         <form className="form" onSubmit={handleSubmit}>
@@ -40,7 +40,7 @@ export default function LoginPage() {
             />
           </label>
           <label className="form__label">
-            Mật khẩu
+            Password
             <input
               type="password"
               required
@@ -50,10 +50,15 @@ export default function LoginPage() {
           </label>
           <div className="form__actions">
             <button className="primary-button" type="submit" disabled={loading}>
-              {loading ? 'Đang xử lý...' : 'Đăng nhập'}
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
             <a className="link-button" href="/auth/register">
-              Chưa có tài khoản? Đăng ký
+              Need an account? Sign up
+            </a>
+          </div>
+          <div className="form__footer">
+            <a className="link-button" href="/auth/forgot">
+              Forgot password?
             </a>
           </div>
         </form>

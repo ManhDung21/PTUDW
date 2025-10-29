@@ -34,14 +34,18 @@ export function ProductCard({ product }: ProductCardProps) {
     setAdding(true);
     try {
       await addToCart(product._id, product.min_order_quantity ?? 1);
-      setMessage('Đã thêm vào giỏ hàng');
+      setMessage('Added to cart');
     } catch (err) {
       if (err instanceof Error && err.message === 'AUTH_REQUIRED') {
-        setMessage('Vui lòng đăng nhập để mua hàng');
-      } else if ((err as AxiosError)?.response?.data?.detail) {
-        setMessage((err as AxiosError).response?.data?.detail as string);
+        setMessage('Please log in to purchase');
       } else {
-        setMessage('Không thể thêm sản phẩm.');
+        const axiosErr = err as AxiosError<{ detail?: string }>;
+        const detail = axiosErr.response?.data?.detail;
+        if (typeof detail === 'string') {
+          setMessage(detail);
+        } else {
+          setMessage('Unable to add product.');
+        }
       }
     } finally {
       setAdding(false);

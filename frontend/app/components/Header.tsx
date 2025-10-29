@@ -10,16 +10,16 @@ import { useCart } from '../providers/CartContext';
 type NavItem = { href: string; label: string };
 
 const BASE_NAV: NavItem[] = [
-  { href: '/store', label: 'Cua hang' },
-  { href: '/cart', label: 'Gio hang' },
-  { href: '/orders', label: 'Don hang' },
-  { href: '/account', label: 'Tai khoan' },
-  { href: '/ai', label: 'AI mo ta' },
+  { href: '/store', label: 'Cửa hàng' },
+  { href: '/cart', label: 'Giỏ hàng' },
+  { href: '/orders', label: 'Đơn hàng' },
+  { href: '/account', label: 'Tài khoản' },
+  { href: '/ai', label: 'AI mô tả' },
 ];
 
 const AUTH_NAV: NavItem[] = [
-  { href: '/auth/login', label: 'Dang nhap' },
-  { href: '/auth/register', label: 'Dang ky' },
+  { href: '/auth/login', label: 'Đăng nhập' },
+  { href: '/auth/register', label: 'Đăng ký' },
 ];
 
 export function Header() {
@@ -82,7 +82,7 @@ export function Header() {
         </nav>
         <div className="nav__actions">
           {loading ? (
-            <span className="nav__hint">Dang tai...</span>
+            <span className="nav__hint">Đang tải...</span>
           ) : user ? (
             <div className="nav__user">
               <span className="nav__hint">{user.full_name || user.email || user.phone_number}</span>
@@ -94,7 +94,7 @@ export function Header() {
                   router.push('/');
                 }}
               >
-                Dang xuat
+                Đăng xuất
               </button>
             </div>
           ) : (
@@ -134,7 +134,7 @@ export function Header() {
           </div>
           <div className="nav-drawer__actions">
             {loading ? (
-              <span className="nav__hint">Dang tai...</span>
+              <span className="nav__hint">Đang tải...</span>
             ) : user ? (
               <>
                 <span className="nav__hint">{user.full_name || user.email || user.phone_number}</span>
@@ -146,7 +146,7 @@ export function Header() {
                     router.push('/');
                   }}
                 >
-                  Dang xuat
+                  Đăng xuất
                 </button>
               </>
             ) : (

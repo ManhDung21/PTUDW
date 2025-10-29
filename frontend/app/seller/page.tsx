@@ -184,10 +184,6 @@ export default function SellerDashboardPage(): JSX.Element | null {
     void fetchData();
   }, [loading, user, router]);
 
-  if (!user) {
-    return null;
-  }
-
   const metricCards = useMemo(() => {
     if (!summary) {
       return [] as { label: string; value: string }[];
@@ -201,6 +197,10 @@ export default function SellerDashboardPage(): JSX.Element | null {
       { label: "San pham sap het hang", value: summary.low_stock_items.toString() },
     ];
   }, [summary]);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="page-container seller-dashboard">

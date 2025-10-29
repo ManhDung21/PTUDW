@@ -55,7 +55,7 @@ export default function CheckoutPage() {
         setSelectedAddressId(defaultAddress?._id ?? null);
       } catch (err) {
         console.error(err);
-        setError('Không thể tải danh sách địa chỉ.');
+        setError('Unable to load addresses.');
       } finally {
         setLoading(false);
       }
@@ -72,10 +72,12 @@ export default function CheckoutPage() {
       setCreatingAddress(false);
     } catch (err) {
       console.error(err);
-      if ((err as AxiosError)?.response?.data?.detail) {
-        setError((err as AxiosError).response?.data?.detail as string);
+      const axiosErr = err as AxiosError<{ detail?: string }>;
+      const detail = axiosErr.response?.data?.detail;
+      if (typeof detail === 'string') {
+        setError(detail);
       } else {
-        setError('Không thể tạo địa chỉ mới.');
+        setError('Unable to create a new address.');
       }
       throw err;
     }
@@ -88,13 +90,13 @@ export default function CheckoutPage() {
       setSelectedAddressId(addressId);
     } catch (err) {
       console.error(err);
-      setError('Không thể đặt làm mặc định.');
+      setError('Unable to set as default.');
     }
   };
 
   const handleCheckout = async () => {
     if (!selectedAddressId) {
-      setError('Vui lòng chọn địa chỉ giao hàng.');
+      setError('Please select a shipping address.');
       return;
     }
     try {
@@ -105,21 +107,22 @@ export default function CheckoutPage() {
         payment_method: 'cod',
         note: note.trim() || null,
       });
-      setSuccess(`Đặt hàng thành công. Mã đơn: ${data.order_code}`);
+      setSuccess(`Order placed successfully. Code: ${data.order_code}`);
       await refreshCart();
       router.push('/orders');
     } catch (err) {
       console.error(err);
-      if ((err as AxiosError)?.response?.data?.detail) {
-        setError((err as AxiosError).response?.data?.detail as string);
+      const axiosErr = err as AxiosError<{ detail?: string }>;
+      const detail = axiosErr.response?.data?.detail;
+      if (typeof detail === 'string') {
+        setError(detail);
       } else {
-        setError('Không thể đặt hàng.');
+        setError('Unable to place order.');
       }
     } finally {
       setLoading(false);
     }
   };
-
   const totalAmount = useMemo(() => cart?.subtotal ?? 0, [cart]);
 
   if (!user) {

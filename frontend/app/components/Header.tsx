@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 
 import { useAuth } from '../providers/AuthContext';
 import { useCart } from '../providers/CartContext';
@@ -28,6 +28,7 @@ export function Header() {
   const { user, logout, loading } = useAuth();
   const { cart } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const cartBadge = useMemo(() => cart?.total_items ?? 0, [cart]);
 
@@ -49,16 +50,49 @@ export function Header() {
   const navItems = useMemo(() => [...BASE_NAV, ...extraNav], [extraNav]);
 
   useEffect(() => {
+    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    if (!params) {
+      setSearchTerm('');
+      return;
+    }
+    const query = params.get('keyword') ?? params.get('q') ?? '';
+    setSearchTerm(query);
+  }, [pathname]);
+
+  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const value = searchTerm.trim();
+    const target = value ? `/store?keyword=${encodeURIComponent(value)}` : '/store';
+    router.push(target);
+    setMenuOpen(false);
+  };
+
+  const postListingHref = user ? '/seller' : '/auth/register';
+  const postListingLabel = user ? 'Đăng tin bán hàng' : 'Tham gia bán hàng';
+
+  useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
 
   return (
     <header className="site-header">
       <div className="site-header__inner">
-        <Link href="/store" className="brand">
-          <span className="brand__logo">dY?S</span>
-          <span className="brand__name">Fruitify</span>
-        </Link>
+        <div className="header-brand">
+          <Link href="/store" className="brand">
+            <span className="brand__logo">dY?S</span>
+            <span className="brand__name">Fruitify</span>
+          </Link>
+          <span className="brand-tagline">Chợ trái cây trực tuyến</span>
+        </div>
+        <form className="header-search" onSubmit={handleSearch} role="search">
+          <input
+            type="search"
+            placeholder="Tìm sản phẩm, nhà bán..."
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+          <button type="submit">Tìm kiếm</button>
+        </form>
         <button
           type="button"
           className="nav-toggle"
@@ -69,7 +103,7 @@ export function Header() {
           <span />
           <span />
         </button>
-        <nav className={`nav nav--desktop`}>
+        <nav className="nav nav--desktop">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
@@ -104,6 +138,9 @@ export function Header() {
               </Link>
             ))
           )}
+          <Link href={postListingHref} className="header-post-button">
+            {postListingLabel}
+          </Link>
         </div>
       </div>
       <nav className={`nav-drawer ${menuOpen ? 'is-open' : ''}`} onClick={() => setMenuOpen(false)}>
@@ -121,6 +158,21 @@ export function Header() {
               <span />
             </button>
           </div>
+          <form
+            className="nav-drawer__search"
+            onSubmit={(event) => {
+              handleSearch(event);
+            }}
+            role="search"
+          >
+            <input
+              type="search"
+              placeholder="Tìm sản phẩm, nhà bán..."
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+            <button type="submit">Tìm kiếm</button>
+          </form>
           <div className="nav-drawer__links">
             {navItems.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -148,6 +200,9 @@ export function Header() {
                 >
                   Đăng xuất
                 </button>
+                <Link href={postListingHref} className="primary-button nav-drawer__post">
+                  {postListingLabel}
+                </Link>
               </>
             ) : (
               AUTH_NAV.map((item) => (
@@ -156,6 +211,11 @@ export function Header() {
                 </Link>
               ))
             )}
+            {!user ? (
+              <Link href={postListingHref} className="primary-button nav-drawer__post">
+                {postListingLabel}
+              </Link>
+            ) : null}
           </div>
         </div>
       </nav>

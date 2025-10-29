@@ -59,15 +59,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       return;
     }
+
+    const handleExpiredSession = (reason: unknown) => {
+      console.error('Failed to refresh profile', reason);
+      assignToken(null);
+      setUser(null);
+      setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+    };
+
     try {
       const { data } = await apiClient.get(`${API_PREFIX}/users/me`);
       setUser(fromProfileResponse(data));
       setError(null);
-    } catch (err) {
-      console.error('Failed to refresh profile', err);
-      assignToken(null);
-      setUser(null);
-      setError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      return;
+    } catch (primaryError) {
+      const status = (primaryError as AxiosError)?.response?.status;
+      if (status === 404) {
+        try {
+          const { data } = await apiClient.get('/auth/me');
+          setUser(fromProfileResponse(data));
+          setError(null);
+          return;
+        } catch (fallbackError) {
+          handleExpiredSession(fallbackError);
+          return;
+        }
+      }
+      handleExpiredSession(primaryError);
     }
   }, [token, assignToken]);
 

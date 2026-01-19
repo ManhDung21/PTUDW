@@ -145,14 +145,37 @@ export default function AiGeneratorPage() {
   const resolvedResultImage = useMemo(() => resolveMediaUrl(result?.image_url ?? null), [result]);
 
   return (
-    <div className="page-container">
-      <div className="generator-page">
-        <section className="generator-panel card">
-          <h1>Trình tạo mô tả AI</h1>
-          <p className="panel-subtitle">
-            Tải ảnh hoặc nhập thông tin sản phẩm để AI Fruitify gợi ý mô tả phù hợp với phong cách bạn chọn.
+    <div className="page-container ai-view">
+      <section className="ai-hero">
+        <div className="ai-hero__content">
+          <span className="ai-hero__badge">AI mô tả Chợ Tốt+</span>
+          <h1 className="ai-hero__title">Tăng tốc đăng tin với mô tả sản phẩm chuẩn marketplace</h1>
+          <p className="ai-hero__subtitle">
+            Tạo mô tả sinh động, nhất quán thương hiệu và tối ưu chuyển đổi chỉ với vài thao tác kéo thả hình ảnh hoặc nhập thông tin ngắn gọn.
           </p>
-          <label className="form__label">
+          <div className="ai-hero__actions">
+            <button type="button" className="ai-hero__action" onClick={handleGenerateFromText} disabled={loading || !productInfo.trim()}>
+              {loading ? 'Đang tạo mô tả...' : 'Tạo mô tả ngay'}
+            </button>
+            <span className="ai-hero__hint">Không cần cài đặt. Hoàn toàn miễn phí cho nhà bán Fruitify.</span>
+          </div>
+        </div>
+        <ul className="ai-hero__list">
+          <li>Tùy chọn phong cách mô tả theo kịch bản bán hàng của bạn.</li>
+          <li>Đồng bộ lịch sử mô tả để tái sử dụng và chỉnh sửa nhanh.</li>
+          <li>Tích hợp sẵn với giỏ hàng, đơn hàng và trang sản phẩm.</li>
+        </ul>
+      </section>
+
+      <div className="generator-page">
+        <section className="generator-panel card ai-generator">
+          <header className="ai-generator__header">
+            <h2>Trung tâm tạo mô tả</h2>
+            <p className="ai-generator__subtitle">
+              Chọn phong cách, tải hình hoặc nhập thông tin để AI gợi ý nội dung hấp dẫn, đúng chuẩn marketplace.
+            </p>
+          </header>
+          <label className="form__label ai-generator__selector">
             Phong cách mô tả
             <select value={selectedStyle} onChange={(event) => setSelectedStyle(event.target.value)}>
               {styles.map((style) => (
@@ -162,31 +185,35 @@ export default function AiGeneratorPage() {
               ))}
             </select>
           </label>
-          <div className="generator-grid">
-            <div className="generator-column">
-              <h2>1. Mô tả từ hình ảnh</h2>
-              <input type="file" accept="image/*" onChange={handleImageChange} />
+          <div className="ai-generator__grid">
+            <div className="ai-generator__column">
+              <span className="ai-generator__step">Bước 1</span>
+              <h3>Tạo mô tả từ hình ảnh</h3>
+              <p className="ai-generator__hint">Tải lên hình ảnh sản phẩm, AI sẽ tự động nhận diện điểm nổi bật.</p>
+              <input className="ai-generator__file" type="file" accept="image/*" onChange={handleImageChange} />
               {imagePreview ? (
                 <div className="media-preview">
                   <Image src={imagePreview} alt="Xem trước" fill className="preview-image" />
                 </div>
               ) : (
-                <p className="section-hint">Chọn ảnh sản phẩm để bắt đầu.</p>
+                <p className="section-hint">Chọn ảnh sắc nét để có mô tả sống động nhất.</p>
               )}
               <button className="primary-button" type="button" onClick={handleGenerateFromImage} disabled={loading}>
-                {loading ? 'Đang xử lý...' : 'Tạo mô tả từ ảnh'}
+                {loading ? 'Đang xử lý...' : 'Sinh mô tả từ ảnh'}
               </button>
             </div>
-            <div className="generator-column">
-              <h2>2. Mô tả từ văn bản</h2>
+            <div className="ai-generator__column">
+              <span className="ai-generator__step">Bước 2</span>
+              <h3>Tạo mô tả từ thông tin</h3>
+              <p className="ai-generator__hint">Nhập nhanh tên sản phẩm, nguồn gốc, hương vị, chương trình ưu đãi...</p>
               <textarea
                 rows={6}
                 value={productInfo}
                 onChange={(event) => setProductInfo(event.target.value)}
-                placeholder="Ví dụ: Táo Fuji nhập khẩu Nhật Bản, quả to, màu đỏ tươi, vị ngọt giòn..."
+                placeholder="Ví dụ: Xoài cát Hòa Lộc loại 1, canh tác hữu cơ, giao trong 2h tại TP.HCM..."
               />
               <button className="primary-button" type="button" onClick={handleGenerateFromText} disabled={loading}>
-                {loading ? 'Đang xử lý...' : 'Tạo mô tả từ văn bản'}
+                {loading ? 'Đang xử lý...' : 'Sinh mô tả từ văn bản'}
               </button>
             </div>
           </div>
@@ -194,8 +221,8 @@ export default function AiGeneratorPage() {
         </section>
 
         {result ? (
-          <section className="card result-panel">
-            <div className="panel-heading">
+          <section className="card result-panel ai-result">
+            <div className="ai-result__header">
               <div>
                 <h2>Kết quả mô tả</h2>
                 <span className="chip">{result.style}</span>
@@ -208,22 +235,30 @@ export default function AiGeneratorPage() {
               </div>
             ) : null}
             <p className="result-text">{result.description}</p>
+            <div className="ai-result__actions">
+              <button className="secondary-button" type="button" onClick={handleGenerateFromText} disabled={loading || !productInfo.trim()}>
+                Tạo mô tả khác
+              </button>
+              <button className="primary-button" type="button" onClick={handleGenerateFromImage} disabled={loading || !imageFile}>
+                Làm mới từ ảnh
+              </button>
+            </div>
           </section>
         ) : null}
 
-        <section className="card history-panel">
-          <div className="panel-heading">
+        <section className="card history-panel ai-history">
+          <div className="ai-history__header">
             <div>
-              <h2>Lịch sử mô tả</h2>
-              <p className="panel-subtitle">
-                {user ? 'Những mô tả gần đây của bạn sẽ được lưu tự động.' : 'Đăng nhập để lưu lịch sử mô tả của bạn.'}
+              <h2>Lịch sử mô tả gần đây</h2>
+              <p className="ai-history__subtitle">
+                {user ? 'Quản lý kho nội dung để tái sử dụng trên các kênh bán hàng khác nhau.' : 'Đăng nhập để lưu và xem lại các mô tả đã tạo.'}
               </p>
             </div>
           </div>
           {!user ? (
             <p className="section-hint">Bạn cần đăng nhập để xem lịch sử.</p>
           ) : history.length === 0 ? (
-            <p className="section-hint">Chưa có lịch sử nào.</p>
+            <p className="section-hint">Chưa có mô tả nào. Bắt đầu tạo ngay!</p>
           ) : (
             <div className="history-list">
               {history.map((item) => {

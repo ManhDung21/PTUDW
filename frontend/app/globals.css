@@ -822,19 +822,30 @@ button {
 }
 
 .primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 22px;
   background: linear-gradient(135deg, #ff8c42 0%, #ff6b6b 100%);
   border: none;
-  padding: 14px 28px;
-  border-radius: 999px;
+  border-radius: 12px;
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .primary-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 32px rgba(255, 140, 66, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(255, 140, 66, 0.3);
+  filter: brightness(1.03);
+}
+
+.primary-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.35);
 }
 
 .primary-button:disabled {
@@ -842,21 +853,37 @@ button {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  filter: none;
 }
 
 .secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
   background: transparent;
   border: 1px solid var(--accent-orange);
   color: var(--accent-orange);
-  border-radius: 999px;
-  padding: 12px 22px;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .secondary-button:hover {
-  background: rgba(255, 140, 66, 0.1);
+  background: rgba(255, 140, 66, 0.12);
+}
+
+.secondary-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.25);
+}
+
+.secondary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 textarea,

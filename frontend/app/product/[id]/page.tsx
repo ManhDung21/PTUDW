@@ -40,6 +40,7 @@ export default function ProductDetailPage() {
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [activeImage, setActiveImage] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -89,6 +90,14 @@ export default function ProductDetailPage() {
     return Array.from(sources).map((url) => resolveMediaUrl(url) ?? '').filter(Boolean);
   }, [product]);
 
+  useEffect(() => {
+    if (gallery.length) {
+      setActiveImage((current) => (current && gallery.includes(current) ? current : gallery[0]));
+    } else {
+      setActiveImage(null);
+    }
+  }, [gallery]);
+
   const activeVariant = useMemo(() => {
     if (!selectedVariantId) {
       return null;
@@ -122,58 +131,86 @@ export default function ProductDetailPage() {
 
   return (
     <div className="page-container">
-      <div className="product-detail">
-        <div className="product-detail__gallery">
-          {gallery.length ? (
-            gallery.map((url) => (
-              <div key={url} className="product-detail__image">
-                <Image src={url} alt={product.name} fill sizes="(max-width: 768px) 100vw, 480px" />
-              </div>
-            ))
-          ) : (
-            <div className="product-detail__placeholder">Không có hình ảnh</div>
-          )}
-        </div>
-        <div className="product-detail__info">
-          <h1>{product.name}</h1>
-          {product.summary ? <p className="product-detail__summary">{product.summary}</p> : null}
-          <div className="product-detail__price">{displayPrice.toLocaleString('vi-VN')}đ</div>
-          {product.variants && product.variants.length > 0 ? (
-            <div className="product-detail__variants">
-              <h4>Chọn biến thể</h4>
-              <div className="variant-grid">
-                {product.variants.map((variant) => (
-                  <button
-                    key={variant._id}
-                    type="button"
-                    className={`variant-chip ${selectedVariantId === variant._id ? 'is-active' : ''}`}
-                    onClick={() => setSelectedVariantId(variant._id)}
-                  >
-                    {variant.sku || Object.values(variant.attributes ?? {}).join(', ') || 'Biến thể'}
-                    {variant.stock_quantity !== undefined ? ` • ${variant.stock_quantity} sp` : ''}
-                  </button>
-                ))}
-              </div>
+      <div className="listing-detail">
+        <div className="listing-detail__media">
+          <div className="listing-detail__main">
+            {activeImage ? (
+              <Image src={activeImage} alt={product.name} fill sizes="(max-width: 768px) 100vw, 560px" />
+            ) : (
+              <div className="listing-detail__placeholder">Không có hình ảnh</div>
+            )}
+          </div>
+          {gallery.length > 1 ? (
+            <div className="listing-detail__thumbs">
+              {gallery.map((url, index) => (
+                <button
+                  key={url}
+                  type="button"
+                  className={`listing-detail__thumb ${activeImage === url ? 'is-active' : ''}`}
+                  onClick={() => setActiveImage(url)}
+                  aria-label={`Chọn hình ảnh ${index + 1}`}
+                >
+                  <span className="listing-detail__thumb-image">
+                    <Image src={url} alt={product.name} fill sizes="80px" />
+                  </span>
+                </button>
+              ))}
             </div>
           ) : null}
-          <div className="product-detail__actions">
-            <label className="product-detail__quantity">
-              Số lượng
-              <input
-                type="number"
-                min={1}
-                value={quantity}
-                onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))}
-              />
-            </label>
-            <button type="button" className="primary-button" onClick={handleAddToCart}>
-              {user ? 'Thêm vào giỏ' : 'Đăng nhập để mua'}
-            </button>
+        </div>
+        <div className="listing-detail__aside">
+          <div className="listing-detail__header">
+            <span className="listing-detail__badge">Tin nổi bật</span>
+            <h1>{product.name}</h1>
+            {product.summary ? <p className="listing-detail__summary">{product.summary}</p> : null}
           </div>
-          {feedback ? <span className="product-detail__feedback">{feedback}</span> : null}
+          <div className="listing-detail__panel">
+            <div className="listing-detail__pricing">
+              <span className="listing-detail__price">{displayPrice.toLocaleString('vi-VN')}đ</span>
+              <span className="listing-detail__status">Còn hàng</span>
+            </div>
+            <div className="listing-detail__stats">
+              <span>{gallery.length} hình ảnh</span>
+              {product.variants?.length ? <span>{product.variants.length} lựa chọn</span> : null}
+            </div>
+            {product.variants && product.variants.length > 0 ? (
+              <div className="listing-detail__section">
+                <h4>Chọn biến thể</h4>
+                <div className="variant-grid">
+                  {product.variants.map((variant) => (
+                    <button
+                      key={variant._id}
+                      type="button"
+                      className={`variant-chip ${selectedVariantId === variant._id ? 'is-active' : ''}`}
+                      onClick={() => setSelectedVariantId(variant._id)}
+                    >
+                      {variant.sku || Object.values(variant.attributes ?? {}).join(', ') || 'Biến thể'}
+                      {variant.stock_quantity !== undefined ? ` • ${variant.stock_quantity} sp` : ''}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            <div className="listing-detail__section listing-detail__quantity">
+              <label htmlFor="listing-quantity">Số lượng</label>
+              <div className="listing-detail__quantity-control">
+                <input
+                  id="listing-quantity"
+                  type="number"
+                  min={1}
+                  value={quantity}
+                  onChange={(event) => setQuantity(Math.max(1, Number(event.target.value)))}
+                />
+                <button type="button" className="primary-button" onClick={handleAddToCart}>
+                  {user ? 'Thêm vào giỏ hàng' : 'Đăng nhập để mua'}
+                </button>
+              </div>
+            </div>
+            {feedback ? <div className="listing-detail__feedback">{feedback}</div> : null}
+          </div>
           {product.description_custom ? (
-            <div className="product-detail__description">
-              <h4>Chi tiết sản phẩm</h4>
+            <div className="listing-detail__description">
+              <h3>Chi tiết sản phẩm</h3>
               <p>{product.description_custom}</p>
             </div>
           ) : null}

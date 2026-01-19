@@ -124,26 +124,54 @@ export default function CheckoutPage() {
     }
   };
   const totalAmount = useMemo(() => cart?.subtotal ?? 0, [cart]);
+  const totalItems = cart?.total_items ?? 0;
+  const formattedTotal = totalAmount.toLocaleString('vi-VN');
 
   if (!user) {
     return null;
   }
 
   return (
-    <div className="page-container">
+    <div className="page-container checkout-view">
+      <section className="commerce-hero commerce-hero--checkout">
+        <div className="commerce-hero__content">
+          <span className="commerce-hero__badge">Bước 2</span>
+          <h1 className="commerce-hero__title">Thanh toán & giao nhận</h1>
+          <p className="commerce-hero__subtitle">
+            Hoàn tất thông tin giao hàng và kiểm tra giá trị đơn để đặt hàng thành công.
+          </p>
+          <ul className="commerce-hero__steps">
+            <li className="is-complete">Giỏ hàng</li>
+            <li className="is-active">Thông tin giao hàng</li>
+            <li>Hoàn tất</li>
+          </ul>
+        </div>
+        <div className="commerce-hero__meta">
+          <div className="commerce-hero__stat">
+            <span className="commerce-hero__stat-label">Sản phẩm</span>
+            <strong>{totalItems}</strong>
+          </div>
+          <div className="commerce-hero__stat">
+            <span className="commerce-hero__stat-label">Thành tiền</span>
+            <strong>{formattedTotal}đ</strong>
+          </div>
+        </div>
+      </section>
       <div className="checkout-page">
         <div className="checkout-page__main">
-          <h1>Thanh toán</h1>
+          <header className="checkout-section__header">
+            <div>
+              <h2>Thông tin giao hàng</h2>
+              <p className="checkout-section__hint">Chọn địa chỉ nhận hàng hoặc tạo mới để đảm bảo giao đúng nơi.</p>
+            </div>
+            <button type="button" className="checkout-section__link" onClick={() => setCreatingAddress((value) => !value)}>
+              {creatingAddress ? 'Đóng biểu mẫu' : 'Thêm địa chỉ mới'}
+            </button>
+          </header>
           {error ? <p className="section-error">{error}</p> : null}
           {success ? <p className="section-success">{success}</p> : null}
-          <section className="address-section">
-            <div className="address-section__header">
-              <h2>Địa chỉ giao hàng</h2>
-              <button type="button" className="secondary-button" onClick={() => setCreatingAddress((value) => !value)}>
-                {creatingAddress ? 'Đóng' : 'Thêm địa chỉ mới'}
-              </button>
-            </div>
-            {creatingAddress ? <AddressForm onSubmit={handleCreateAddress} onCancel={() => setCreatingAddress(false)} /> : null}
+          {creatingAddress ? <AddressForm onSubmit={handleCreateAddress} onCancel={() => setCreatingAddress(false)} /> : null}
+          <section className="checkout-section checkout-section--addresses">
             {loading ? (
               <p className="section-hint">Đang tải địa chỉ...</p>
             ) : addresses.length === 0 ? (
@@ -180,8 +208,9 @@ export default function CheckoutPage() {
               </div>
             )}
           </section>
-          <section className="note-section">
-            <h2>Ghi chú</h2>
+          <section className="checkout-section checkout-section--note">
+            <h3>Ghi chú cho người giao hàng</h3>
+            <p className="checkout-section__hint">Ví dụ: giờ nhận hàng thuận tiện, hướng dẫn bảo vệ sản phẩm.</p>
             <textarea
               placeholder="Hướng dẫn giao hàng, thời gian nhận hàng..."
               value={note}
@@ -191,23 +220,33 @@ export default function CheckoutPage() {
         </div>
         <aside className="checkout-summary">
           <div className="checkout-summary__card">
-            <h2>Đơn hàng</h2>
-            <div className="checkout-summary__row">
-              <span>Tạm tính</span>
-              <span>{totalAmount.toLocaleString('vi-VN')}đ</span>
+            <span className="checkout-summary__badge">Đơn hàng của bạn</span>
+            <h3 className="checkout-summary__title">Tổng tiền cần thanh toán</h3>
+            <div className="checkout-summary__grid">
+              <div className="checkout-summary__row">
+                <span>Tạm tính</span>
+                <strong>{formattedTotal}đ</strong>
+              </div>
+              <div className="checkout-summary__row">
+                <span>Phí vận chuyển</span>
+                <strong>0đ</strong>
+              </div>
+              <div className="checkout-summary__row checkout-summary__row--total">
+                <span>Thành tiền</span>
+                <strong>{formattedTotal}đ</strong>
+              </div>
             </div>
-            <div className="checkout-summary__row">
-              <span>Phí vận chuyển</span>
-              <span>0đ</span>
+            <div className="checkout-summary__actions">
+              <button
+                type="button"
+                className="primary-button checkout-summary__action"
+                disabled={!cart || cart.items.length === 0}
+                onClick={handleCheckout}
+              >
+                Đặt hàng ngay
+              </button>
+              <p className="checkout-summary__note">Thanh toán khi nhận hàng (COD) – bạn chỉ trả khi đơn được giao đến.</p>
             </div>
-            <div className="checkout-summary__row checkout-summary__row--total">
-              <span>Thành tiền</span>
-              <strong>{totalAmount.toLocaleString('vi-VN')}đ</strong>
-            </div>
-            <button type="button" className="primary-button w-100" disabled={!cart || cart.items.length === 0} onClick={handleCheckout}>
-              Đặt hàng
-            </button>
-            <p className="section-hint">Phương thức thanh toán: Thanh toán khi nhận hàng (COD)</p>
           </div>
         </aside>
       </div>

@@ -1,5 +1,6 @@
-﻿'use client';
+'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -19,49 +20,72 @@ export default function LoginPage() {
       router.push('/store');
     } catch (err) {
       console.error(err);
-      setLocalError('ÄÄƒng nháº­p khÃ´ng thÃ nh cÃ´ng.');
+      setLocalError('Đăng nhập không thành công.');
     }
   };
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
-        <h1>ÄÄƒng nháº­p</h1>
-        {localError ? <p className="section-error">{localError}</p> : null}
-        {error ? <p className="section-error">{error}</p> : null}
-        <form className="form" onSubmit={handleSubmit}>
-          <label className="form__label">
-            Email
-            <input
-              type="email"
-              required
-              value={form.email}
-              onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
-            />
-          </label>
-          <label className="form__label">
-            Password
-            <input
-              type="password"
-              required
-              value={form.password}
-              onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
-            />
-          </label>
-          <div className="form__actions">
-            <button className="primary-button" type="submit" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign in'}
-            </button>
-            <a className="link-button" href="/auth/register">
-              Need an account? Sign up
-            </a>
+      <div className="auth-layout">
+        <section className="auth-hero">
+          <span className="auth-hero__badge">Chợ Tốt+ Marketplace</span>
+          <h1 className="auth-hero__title">Chào mừng trở lại</h1>
+          <p className="auth-hero__subtitle">
+            Kết nối nguồn hàng uy tín, theo dõi đơn và chăm sóc khách chỉ với một tài khoản duy nhất.
+          </p>
+          <ul className="auth-hero__list">
+            <li>Đồng bộ giỏ hàng và lịch sử mua bán trên mọi thiết bị.</li>
+            <li>Nhận thông báo đơn mới và ưu đãi tức thì.</li>
+            <li>Gợi ý giá thông minh giúp chốt đơn nhanh hơn.</li>
+          </ul>
+          <div className="auth-hero__footer">
+            <span>Chưa có tài khoản?</span>
+            <Link href="/auth/register">Tạo tài khoản miễn phí</Link>
           </div>
-          <div className="form__footer">
-            <a className="link-button" href="/auth/forgot">
-              Forgot password?
-            </a>
+        </section>
+        <div className="auth-panel">
+          <div className="auth-card auth-card--raised">
+            <header className="auth-card__header">
+              <span className="auth-card__badge">Đăng nhập</span>
+              <h2>Tiếp tục hành trình mua bán</h2>
+              <p className="auth-card__hint">Nhập email và mật khẩu để truy cập bảng điều khiển của bạn.</p>
+            </header>
+            {localError ? <p className="section-error">{localError}</p> : null}
+            {error ? <p className="section-error">{error}</p> : null}
+            <form className="form auth-form" onSubmit={handleSubmit}>
+              <label className="form__label">
+                Email
+                <input
+                  type="email"
+                  required
+                  value={form.email}
+                  onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
+                  placeholder="ban@chotot.vn"
+                />
+              </label>
+              <label className="form__label">
+                Mật khẩu
+                <input
+                  type="password"
+                  required
+                  value={form.password}
+                  onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
+                  placeholder="••••••"
+                />
+              </label>
+              <div className="form__extras">
+                <Link href="/auth/forgot">Quên mật khẩu?</Link>
+              </div>
+              <button className="primary-button auth-form__submit" type="submit" disabled={loading}>
+                {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+              </button>
+            </form>
+            <div className="auth-card__footer">
+              <span>Bạn mới tham gia?</span>
+              <Link href="/auth/register">Đăng ký ngay</Link>
+            </div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
